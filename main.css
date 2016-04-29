@@ -1,0 +1,72 @@
+.big-title {
+	color: #9900FF;
+	font-size: 40px;
+	font-family: helvetica;
+}
+.small-title {
+	color: #9900FF;
+	font-size: 20px;
+	padding: 0px 25px;
+	font-family: helvetica;
+}
+.main-container {
+	margin: 2% 5%;
+}
+li {
+	list-style-type: none;
+}
+.side-menu {
+	width: 10%;
+}
+.side-menu ul li {
+	margin: 0px 0px 15px;
+}
+.side-menu a {
+	text-decoration: none;
+}
+a:link {
+    text-decoration: none;
+	color: #0000FF;
+}
+a:visited {
+    text-decoration: none;
+	color: #0000FF;
+}
+a:hover {
+    text-decoration: underline;
+}
+a:active {
+    text-decoration: underline;
+}
+
+.secondary-container div {
+	float: left;
+}
+.news-section {
+	width: 60%;
+}
+.news-section li {
+	padding: 10px;
+}
+.news-title {
+	color: #9900FF;
+	font-size: 20px;
+	margin: 0px 0px 0px 45px;
+}
+
+
+.weather-section {
+	width: 25%;
+}
+.weather-section img {
+	width: 80%;
+	height: 80%;
+}
+
+.main-container ul .current {
+	background: #440099;
+}
+
+
+
+/*
