@@ -1,0 +1,39 @@
+<html>
+<head>
+	<style>
+      div.centerDiv {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 220px;
+        height: 150px;
+        padding: 20px;  
+        color: #444444;
+        text-align: center;
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+      }
+	  
+	  button.submit {
+		margin: 10px; 
+	  }
+    </style>
+	<link rel="stylesheet" href="pure\pure-min.css">
+</head>
+
+	<div class="centerDiv">
+	
+		<form class="pure-form pure-form-stacked">
+			<fieldset>
+				<input id="email" type="email" class="pure-u-1" placeholder="Email">
+				<input id="password" type="password" class="pure-u-1" placeholder="Password">
+
+				
+				<button type="submit" class="pure-button pure-button-primary submit">Sign in</button>
+				</br>
+				<a href="#" class="pure-u-1" onclick="alert('Not implemented for prototype')">Forgot Password?</a>
+			</fieldset>
+		</form>
+		
+    </div>
+</html>
