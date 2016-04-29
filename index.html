@@ -1,12 +1,33 @@
-
-
 <html>
 
-	<head>
-		<script src="db.js"></script>
-		<script>
-			alert(getLoggedInUser().name);
-		</script>
-	</head>
+<head>
+	<script src="db.js"></script>
+	<script>
+		alert(getLoggedInUser().name);
+	</script>
+		
+	<style>
+	.custom-restricted-width {
+		/* To limit the menu width to the content of the menu: */
+		display: inline-block;
+		/* Or set the width explicitly: */
+		width: 6em;
+	}
+	</style>
+	<link rel="stylesheet" href="pure\pure-min.css">
+</head>
+
+<body>
+<div class="pure-menu-fixed custom-restricted-width">
+    <span class="pure-menu-heading">Heading Placeholder, remove when done</span>
+
+    <ul class="pure-menu-list">
+        <li class="pure-menu-item"><a href="#" class="pure-menu-link"><img src="images/email.png"/></a></li>
+        <li class="pure-menu-item"><a href="#" class="pure-menu-link"><img src="images/grades.png"/></a></li>
+        <li class="pure-menu-item"><a href="#" class="pure-menu-link"><img src="images/schedule.png"/></a></li>
+        <li class="pure-menu-item"><a href="#" class="pure-menu-link"><img src="images/settings.png"/></a></li>
+        <li class="pure-menu-item"><a href="#" class="pure-menu-link"><img src="images/logout.png"/></a></li>
+    </ul>
+</div>
 
 </html>
