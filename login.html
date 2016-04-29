@@ -1,5 +1,21 @@
 <html>
 <head>
+	<script src="db.js"></script>
+	<script>
+		function tryLogin() {
+			for (index = 0; index < db.length; ++index) {
+				if(db[index].name == getValue("username") && db[index].password == getValue("password")) {
+					document.getElementById("goTo").href = "index.html?id=" + db[index].id;
+					document.getElementById("goTo").click();
+					return;
+				}
+			}
+			alert("Wrong username or password");
+		}
+		function getValue(id) {
+			return document.getElementById(id).value;
+		}
+	</script>
 	<style>
       div.centerDiv {
         position: absolute;
@@ -23,17 +39,17 @@
 
 	<div class="centerDiv">
 	
-		<form class="pure-form pure-form-stacked">
+		<form class="pure-form pure-form-stacked" onsubmit="trySubmit()">
 			<fieldset>
-				<input id="email" type="email" class="pure-u-1" placeholder="Email">
+				<input id="username" class="pure-u-1" placeholder="Username">
 				<input id="password" type="password" class="pure-u-1" placeholder="Password">
 
 				
-				<button type="submit" class="pure-button pure-button-primary submit">Sign in</button>
+				<button type="submit" onclick="tryLogin()" class="pure-button pure-button-primary submit">Sign in</button>
 				</br>
 				<a href="#" class="pure-u-1" onclick="alert('Not implemented for prototype')">Forgot Password?</a>
 			</fieldset>
 		</form>
-		
+		<a id="goTo" href="index.html?id="></a>
     </div>
 </html>
