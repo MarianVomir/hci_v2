@@ -1,0 +1,15 @@
+<html>
+<head>
+</head>
+	<link rel="stylesheet" href="pure\pure.css">
+	<script src="db.js"></script>
+	<script src="util.js"></script>
+	<script>
+		var user = getLoggedInUser();
+	</script>
+<body>
+	<script>
+		document.write(String.format("Welcome {0}!", user.name));
+	</script>
+</body>
+</html>

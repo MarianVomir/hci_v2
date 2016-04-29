@@ -2,32 +2,60 @@
 
 <head>
 	<script src="db.js"></script>
+	<script src="util.js"></script>
 	<script>
-		alert(getLoggedInUser().name);
+		var user = getLoggedInUser();
+		
+		function changePage(page) {
+			document.getElementById("contentPage").src = String.format("{0}.html?id={1}", page, user.id);
+		}
 	</script>
 		
 	<style>
-	.custom-restricted-width {
-		/* To limit the menu width to the content of the menu: */
-		display: inline-block;
-		/* Or set the width explicitly: */
-		width: 6em;
-	}
+		body {
+			margin:0;
+			padding:0;
+			overflow:hidden;
+		}
+		
+		.menu-div {
+			box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
+			width:138px;
+			float: left;
+			height:100%;
+		}
+	
+		.iframe-div {
+			height:100%;
+			margin-left:138px;
+			padding-left: 15px;
+		}
+		ul.list {
+			list-style-type: none;
+		}
+		
+		iframe {
+			margin-top:5%;
+			height:100%;
+			width:99%;
+			border: none;
+		}
 	</style>
 	<link rel="stylesheet" href="pure\pure-min.css">
 </head>
 
-<body>
-<div class="pure-menu-fixed custom-restricted-width">
-    <span class="pure-menu-heading">Heading Placeholder, remove when done</span>
+<body onload="changePage('welcome')">
+	<div class="menu-div">
+		<ul class="list">
+			<li onclick="changePage('email')"><a href="#" class="pure-menu-link"><img src="images/email.png"/></a></li>
+			<li onclick="changePage('grades')"><a href="#" class="pure-menu-link"><img src="images/grades.png"/></a></li>
+			<li onclick="changePage('schedule')"><a href="#" class="pure-menu-link"><img src="images/schedule.png"/></a></li>
+			<li onclick="changePage('settings')"><a href="#" class="pure-menu-link"><img src="images/settings.png"/></a></li>
+			<li><a href="login.html" class="pure-menu-link"><img src="images/logout.png"/></a></li>
+		</ul>
+	</div>
 
-    <ul class="pure-menu-list">
-        <li class="pure-menu-item"><a href="#" class="pure-menu-link"><img src="images/email.png"/></a></li>
-        <li class="pure-menu-item"><a href="#" class="pure-menu-link"><img src="images/grades.png"/></a></li>
-        <li class="pure-menu-item"><a href="#" class="pure-menu-link"><img src="images/schedule.png"/></a></li>
-        <li class="pure-menu-item"><a href="#" class="pure-menu-link"><img src="images/settings.png"/></a></li>
-        <li class="pure-menu-item"><a href="#" class="pure-menu-link"><img src="images/logout.png"/></a></li>
-    </ul>
-</div>
-
+	<div class="iframe-div">
+		<iframe id="contentPage"></iframe> 
+	</div>
 </html>
