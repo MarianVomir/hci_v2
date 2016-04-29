@@ -1,139 +1,78 @@
-<!--
-TODOs
-- refactor this s***
-- add a function to call onChange with selected value "0" when document loads
--->
 <html>
 
 <head>
 </head>
-
+	<script src="db.js"></script>
+	<script src="db_grades.js"></script>
+	<script src="util.js"></script>
 	<link rel="stylesheet" href="pure\pure.css">
 
 <script type="text/javascript">
 
-	table1 =
-	"<tbody>" +
-	"<tr><td>1</td><td>Course1</td><td>10</td><td>9</td><td>Passed</td></tr>" +
-	"<tr><td>2</td><td>Course2</td><td>9</td><td>4</td><td>Failed</td></tr>" +
-	"<tr><td>2</td><td>Course3</td><td>4</td><td>10</td><td>Passed</td></tr>" +
-	"<tbody>" +
-	"</table>";
-	
-	table2 =
-	"<tbody>" +
-	"<tr><td>1</td><td>Course4</td><td>10</td><td>9</td><td>Passed</td></tr>" +
-	"<tr><td>2</td><td>Course5</td><td>9</td><td>4</td><td>Failed</td></tr>" +
-	"<tr><td>2</td><td>Course6</td><td>9</td><td>4</td><td>Failed</td></tr>" +
-	"<tbody>" +
-	"</table>";
-	
-	table3 =
-	"<tbody>" +
-	"<tr><td>1</td><td>Course7</td><td>10</td><td>9</td><td>Passed</td></tr>" +
-	"<tr><td>2</td><td>Course8</td><td>9</td><td>4</td><td>Failed</td></tr>" +
-	"<tr><td>2</td><td>Course9</td><td>9</td><td>4</td><td>Failed</td></tr>" +
-	"<tbody>" +
-	"</table>";
-	
-	table4 =
-	"<tbody>" +
-	"<tr><td>1</td><td>Course100</td><td>10</td><td>9</td><td>Passed</td></tr>" +
-	"<tr><td>2</td><td>Course101</td><td>9</td><td>4</td><td>Failed</td></tr>" +
-	"<tr><td>2</td><td>Course102</td><td>9</td><td>4</td><td>Failed</td></tr>" +
-	"<tbody>" +
-	"</table>";
-	
-	table5 =
-	"<tbody>" +
-	"<tr><td>1</td><td>Course105</td><td>10</td><td>9</td><td>Passed</td></tr>" +
-	"<tr><td>2</td><td>Course106</td><td>9</td><td>4</td><td>Failed</td></tr>" +
-	"<tr><td>2</td><td>Course107</td><td>9</td><td>4</td><td>Failed</td></tr>" +
-	"<tbody>" +
-	"</table>";
-	
-	table6 =
-	"<tbody>" +
-	"<tr><td>1</td><td>Course110</td><td>10</td><td>9</td><td>Passed</td></tr>" +
-	"<tr><td>2</td><td>Course111</td><td>9</td><td>4</td><td>Failed</td></tr>" +
-	"<tr><td>2</td><td>Course112</td><td>9</td><td>4</td><td>Failed</td></tr>" +
-	"<tbody>" +
-	"</table>";
-
-	var tableBoilerplate = 
-	'<table class="pure-table pure-table-horizontal \">' +
-	"<thead>"+
-	"<tr>"+
-	"<th>No</th>"+
-	"<th>Course Name</th>"+
-	"<th>Credits</th>"+
-	"<th>Grade</th>"+
-	"<th>Status</th>"+
-	"</tr>"+
-	"</thead>"
-		
-	var tables = {"0" : table1 , "1" : table2, "2" : table3};
-	var tables2 = {"0" : table4, "1" :table5, "2" :table6};
-	
+	var tableTemplate = 
+		"<table class='pure-table pure-table-horizontal'>" + 
+			"<thead>"+
+				"<tr>"+
+					"<th>No</th>"+
+					"<th>Course Name</th>"+
+					"<th>Credits</th>"+
+					"<th>Grade</th>"+
+					"<th>Status</th>"+
+				"</tr>"+
+			"</thead>" +
+			"<tbody>" +
+				"{0}" +
+			"</tbody>" +
+		"</table>";
 	
 	function displayGradesForSelectedYear(selectThingy)
 	{
+		displayGradesFor(selectThingy.value);
+	}
+	
+	function displayGradesFor(index)
+	{
 		var elem = document.getElementById("current-grades-table");
-		elem.innerHTML =  
-			tableBoilerplate + tables[selectThingy.value] + 
-			"<br> <br>" +
-			tableBoilerplate + tables2[selectThingy.value];
+		var year = getYearsForUser()[index];
+		
+		elem.innerHTML =  String.format("{0}<br><br><br><br><br>{1}", getSemesterData(year.semester1), getSemesterData(year.semester2));
+	}
+	
+	function getSemesterData(semester) {
+		var tableString = "";
+		var credits = 0;
+		var points = 0;
+		for(var index = 0 ; index < semester.length ; index++) {
+			tableString += String.format("<tr><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td><td>{4}</td></tr>", index+1, semester[index].name, semester[index].credits, semester[index].grade, semester[index].grade >= 5 ? "Passed" : "Failed");
+			credits += semester[index].credits;
+			points += semester[index].credits * semester[index].grade;
+		}
+		return String.format(tableTemplate, tableString) + "<br>Grade for semester : " + parseFloat(points/credits).toFixed(2);
+	}
+	
+	function init() {
+		var years = getYearsForUser();
+		var component = document.getElementById("year-combobox")
+		for(var index = 0 ; index < years.length ; index++) {
+			component.innerHTML += String.format("<option value='{0}' {2}>{1}</option>", index, years[index].id, index + 1 < years.length ? "" : "selected");
+		}
+		displayGradesFor(years.length-1);
+	}
+	
+	function getYearsForUser() {
+		var user = getLoggedInUser();
+		for(var index = 0 ; index < db_grades.length ; index++) {
+			if(db_grades[index].id == user.id) {
+				return db_grades[index].years;
+			}
+		}
+		return null;
 	}
 	
 </script>
-<body>
-
-Year
-<select onChange="displayGradesForSelectedYear(this)">
-	<option value="0">2014-2015</option>
-	<option value="1">2015-2016</option>
-	<option value="2"/>2016-2017</option>
-</select>
-
-<div id="current-grades-table">
-		<table class="pure-table pure-table-horizontal"\> 
-	<thead>
-	<tr>
-	<th>No</th>
-	<th>Course Name</th>
-	<th>Credits</th>
-	<th>Grade</th>
-	<th>Status</th>
-	</tr>
-	</thead>
-	<tbody> 
-	<tr><td>1</td><td>Course1</td><td>10</td><td>9</td><td>Passed</td></tr> 
-	<tr><td>2</td><td>Course2</td><td>9</td><td>4</td><td>Failed</td></tr> 
-	<tr><td>2</td><td>Course3</td><td>4</td><td>10</td><td>Passed</td></tr> 
-	<tbody> 
-	</table>
-	
-	<br> <br>
-		
-	<table class="pure-table pure-table-horizontal"\> 
-	<thead>
-	<tr>
-	<th>No</th>
-	<th>Course Name</th>
-	<th>Credits</th>
-	<th>Grade</th>
-	<th>Status</th>
-	</tr>
-	</thead>
-	<tbody> 
-	<tbody> 
-	<tr><td>1</td><td>Course4</td><td>10</td><td>9</td><td>Passed</td></tr> 
-	<tr><td>2</td><td>Course5</td><td>9</td><td>4</td><td>Failed</td></tr> 
-	<tr><td>2</td><td>Course6</td><td>9</td><td>4</td><td>Failed</td></tr> 
-	<tbody> 
-	</table>
-</div>
-
+<body onload="init()">
+	Year 
+	<select id="year-combobox" onChange="displayGradesForSelectedYear(this)"></select><br><br>
+	<div id="current-grades-table"></div>
 </body>
-
 </html>
