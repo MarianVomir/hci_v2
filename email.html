@@ -1,0 +1,203 @@
+<html>
+
+<head>
+</head>
+	<script src="db.js"></script>
+	<script src="db_emails.js"></script>
+	<script src="util.js"></script>
+	<link rel="stylesheet" href="pure\pure.css">
+
+	<style>
+		div.mailList {
+			width : 400px;
+			height : 80%;
+			border-style : solid;
+			border-width : 1;
+			border-color : #AAAAAA;
+			float : left;
+		}
+		
+		input {
+			margin-bottom : 10px;
+		}
+		
+		div.mailList table {
+			width : 400px;
+		}
+		
+		div.mailList table tbody tr, img {
+			cursor: pointer;
+		}
+		
+		div.mailDiv {
+			margin-left:400px;
+			width : 60%;
+			height : 80%;
+			border-style : solid;
+			border-width : 1;
+			border-color : #AAAAAA;
+			padding : 0 10px 0 10px;
+		}
+		
+		textarea {
+		   resize: vertical;
+		}
+	</style>
+<script type="text/javascript">
+	
+	var tableTemplate = 
+		"<table class='pure-table pure-table-horizontal'>" + 
+			"<thead>" +
+				"<tr>" +
+					"<th>Subject</th>" +
+					"<th>Date</th>" +
+					"<th></th>" +
+				"</tr>" +
+			"</thead>" +
+			"<tbody id='email-table-body'>" +
+				"{0}" +
+			"</tbody>" +
+		"</table>";
+	
+	var trashTemplate = "<img src='images/garbage.png' onclick='trashEmail({0}, {1})'/>"
+	var composeTemplate = "<img src='images/compose.png' onclick='compose()'/>"
+	var sendTemplate = "<img src='images/send.png' onclick='send()'/>"
+	
+	var emailTemplate =
+		"<form class='pure-form pure-form-aligned'>" +
+			"<fieldset>" +
+				"<label class='pure-u-1-8'>From</label><input {0} id='from' class='pure-u-7-8' placeholder='From' value='{1}'></input>" +
+				"<label class='pure-u-1-8'>Subject</label><input {0} id='subject' class='pure-u-7-8' placeholder='Subject' value='{2}'></input>" +
+				"<label class='pure-u-1-8'>To</label><input {0} id='to' class='pure-u-7-8' placeholder='To' value='{3}'></input>" +
+				"<label class='pure-u-1-8'>CC</label><input {0} id='cc' class='pure-u-7-8' placeholder='CC' value='{4}'></input>" +
+				"<label class='pure-u-1-8'>BCC</label><input {0} id='bcc' class='pure-u-7-8' placeholder='BCC' value='{5}'></input>" +
+				"<textarea {0} rows=20 id='content' class='pure-u-1' placeholder='Content'>{6}</textarea>" +
+			"</fieldset>" +
+		"</form>";
+	
+	function openFolderForSelection(selectThingy)
+	{
+		openFolder(selectThingy.value);
+	}
+	
+	function openFolder(index)
+	{
+		var elem = document.getElementById("current-emails-table");
+		var emails = getFoldersForUser()[index].emails;
+		var data = "";
+		for(var i = 0 ; i < emails.length ; i++) {
+			data += String.format("<tr id='row_{2}' onclick='openEmail({3},{2})'><td>{0}</td><td>{1}</td><td>{4}</td></tr>", emails[i].subject, emails[i].date, i, index, String.format(trashTemplate, index, i));
+		}
+		elem.innerHTML =  String.format(tableTemplate, data);
+	}
+	
+	function trashEmail(folderIndex, emailIndex) {
+		if(folderIndex != 2) {
+			getFoldersForUser()[2].emails.push(getFoldersForUser()[folderIndex].emails[emailIndex]);
+		}
+		getFoldersForUser()[folderIndex].emails.splice(emailIndex,1);
+		init();
+	}
+	
+	function openEmail(folderIndex, emailIndex) {
+		var rows = document.getElementById("email-table-body").children;
+		for(var i = 0 ; i < rows.length ; i++) {
+			if(rows[i] != null) {
+				rows[i].style.backgroundColor = "";
+			}
+		}
+		if(document.getElementById("row_"+emailIndex) != null) {
+			document.getElementById("row_"+emailIndex).style.backgroundColor = "#AAAAFF";
+			document.getElementById("current-email-div").innerHTML = getReadOnlyEmail(folderIndex, emailIndex);
+		} else {
+			document.getElementById("current-email-div").innerHTML = "";
+		}
+	}
+	
+	function compose() {
+		var rows = document.getElementById("email-table-body").children;
+		for(var i = 0 ; i < rows.length ; i++) {
+			if(rows[i] != null) {
+				rows[i].style.backgroundColor = "";
+			}
+		}
+		document.getElementById("current-email-div").innerHTML = String.format(emailTemplate, "", "", "", "", "", "", "");
+		document.getElementById("from").value = getLoggedInUser().name + "@domain.com";
+		document.getElementById("from").readOnly = true;
+		document.getElementById("action-id").innerHTML = sendTemplate;
+	}
+	
+	function send() {
+		var email ={from:"",to:"",subject:"",cc:"",bcc:"",content:"",date:""};
+		
+		email.from = document.getElementById("from").value;
+		email.to = document.getElementById("to").value;
+		email.subject = document.getElementById("subject").value;
+		email.cc = document.getElementById("cc").value;
+		email.bcc = document.getElementById("bcc").value;
+		email.content = document.getElementById("content").value;
+		email.date = getDate();
+		
+		getFoldersForUser()[1].emails.push(email);
+		
+		alert("Email sent to " + email.to);
+		document.getElementById("action-id").innerHTML = composeTemplate;
+		document.getElementById("current-email-div").innerHTML = "";
+		document.getElementById("folder-combobox").selectedIndex = 1;
+		init();
+	}
+	
+	function getReadOnlyEmail(folderIndex, emailIndex) {
+		var email = getFoldersForUser()[folderIndex].emails[emailIndex];
+		return String.format(emailTemplate, "readonly", email.from, email.subject, email.to, email.cc, email.bcc, email.content);
+	}
+	
+	function init() {
+		var folders = getFoldersForUser();
+		var selectedIndex = document.getElementById("folder-combobox").selectedIndex;
+		selectedIndex = (selectedIndex != -1 ? selectedIndex : 0);
+		
+		var component = document.getElementById("folder-combobox");
+		component.innerHTML = "";
+		for(var index = 0 ; index < folders.length ; index++) {
+			component.innerHTML += String.format("<option value='{0}' {2}>{1}</option>", index, folders[index].name, index + 1 < folders.length ? "" : "selected");
+		}
+		document.getElementById("folder-combobox").selectedIndex = selectedIndex;
+		openFolder(selectedIndex);
+	}
+	
+	function getFoldersForUser() {
+		var user = getLoggedInUser();
+		for(var index = 0 ; index < db_emails.length ; index++) {
+			if(db_emails[index].id == user.id) {
+				return db_emails[index].folders;
+			}
+		}
+		return null;
+	}
+	
+	function getDate() {
+		var today = new Date();
+		var dd = today.getDate();
+		var mm = today.getMonth()+1;
+
+		var yyyy = today.getFullYear();
+		if(dd<10){
+			dd='0'+dd
+		} 
+		if(mm<10){
+			mm='0'+mm
+		} 
+		return dd+'.'+mm+'.'+yyyy;
+	}
+	
+</script>
+
+<body onload="init()">
+	Folder 
+	<select id="folder-combobox" onChange="openFolderForSelection(this)"></select><div style="display: inline-block; width:260px"></div>
+		<span id="action-id"><img src='images/compose.png' onclick="compose()"/></span><br><br>
+	<div id="current-emails-table" class="mailList"></div>
+	<div id="current-email-div" class="mailDiv"></div>
+</body>
+</html>
