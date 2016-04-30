@@ -1,0 +1,172 @@
+<html>
+
+<head>
+</head>
+	<script src="db.js"></script>
+	<script src="db_schedule.js"></script>
+	<script src="util.js"></script>
+	<link rel="stylesheet" href="pure\pure.css">
+	<link rel="stylesheet" href="datepicker\style.css">
+
+	<style>
+		div.schedule {
+			width : 60%;
+			height : 80%;
+			float : left;
+			margin-right : 10px;
+		}
+		
+		div.schedule table {
+			width : 100%;
+		}
+		
+		div.schedule table td {
+			border: 1px solid #AAAAAA;
+		}
+		
+		div.schedule table td.item {
+			cursor: pointer;
+		}
+		
+		.cal-caption {
+			background-image: linear-gradient(to bottom, #AAAAFF, #9999FF 75%, #7777FF);
+		}
+		
+		div#detailDiv {
+			padding: 10px;
+		}
+	</style>
+<script type="text/javascript">
+
+	var tableTemplate = 
+		"<table id='scheduleTable' class='pure-table pure-table-horizontal'>" + 
+			"<thead>"+
+				"<tr>"+
+					"<th></th>" +
+					"<th>Monday</th>"+
+					"<th>Tuesday</th>"+
+					"<th>Wednesday</th>"+
+					"<th>Thursday</th>"+
+					"<th>Friday</th>"+
+				"</tr>"+
+			"</thead>" +
+			"<tbody>" +
+				"{0}" +
+			"</tbody>" +
+		"</table><br><div id='detailDiv'></div>";
+
+	
+	function init() {
+		var schedule = getSchedule();
+		var data = "";
+		for(var index = 0 ; index < schedule.length ; index++) {
+			var line = "";
+			line += String.format("<td>{0}</td>", index*2 + 8);
+			for(var i = 0 ; i < 5 ; i++) {
+				if (schedule[index][i] != null) {
+					line += String.format("<td class='item course{0}' onclick='selectCourse({0})'>{1}</td>", schedule[index][i].id, schedule[index][i].name)
+				} else {
+					line += "<td></td>";
+				}
+			}
+			data += String.format("<tr>{0}</tr>", line);
+		}
+		
+		document.getElementById("scheduleDiv").innerHTML = String.format(tableTemplate, data);
+	}
+	
+	function selectCourse(id) {
+		var items = document.getElementsByClassName("item");
+		for(var i = 0 ; i < items.length ; i++) {
+			items[i].style.backgroundColor = "";
+		}
+		
+		var selectedItems = document.getElementsByClassName("course"+id);
+		for(var i = 0 ; i < selectedItems.length ; i++) {
+			selectedItems[i].style.backgroundColor = "#AAAAFF";
+		}
+		
+		document.getElementById("detailDiv").innerHTML = "Course" + id + "<br><br><br>Details";
+		document.getElementById("detailDiv").style.backgroundColor = "#AAAAFF";
+		//document.getElementById("detailDiv").width = document.getElementById("scheduleTable");
+	}
+	
+	function getSchedule() {
+		if(document.getElementsByClassName("cal-selected")[0].children[0].innerHTML < 15) {
+			return db_schedule.scheduleA;
+		} else {
+			return db_schedule.scheduleB;
+		}
+	}
+	
+	var currentCell = 8
+	function selectDate(date) {
+		document.getElementById("cell" + currentCell).className = "";
+		document.getElementById("cell" + date).className = "cal-selected";
+		currentCell = date;
+		init();
+	}
+	
+</script>
+<body onload="init()">
+	<div id="scheduleDiv" class="schedule"></div>
+	<div id="cal-div">
+		<div class="cal">
+		  <table class="cal-table">
+			<caption class="cal-caption">
+			  <a href="#" class="prev">&laquo;</a>
+			  <a href="#" class="next">&raquo;</a>
+			  May 2012
+			</caption>
+			<tbody class="cal-body">
+			  <tr>
+				<td class="cal-off"><a href="#">30</a></td>
+				<td id="cell1" onclick="selectDate(1)"><a href="#">1</a></td>
+				<td id="cell2" onclick="selectDate(2)"><a href="#">2</a></td>
+				<td id="cell3" onclick="selectDate(3)"><a href="#">3</a></td>
+				<td id="cell4" onclick="selectDate(4)"><a href="#">4</a></td>
+				<td id="cell5" onclick="selectDate(5)"><a href="#">5</a></td>
+				<td id="cell6" onclick="selectDate(6)"><a href="#">6</a></td>
+			  </tr>
+			  <tr>
+				<td id="cell7" onclick="selectDate(7)"><a href="#">7</a></td>
+				<td id="cell8" onclick="selectDate(8)" class="cal-selected"><a href="#">8</a></td>
+				<td id="cell9" onclick="selectDate(9)"><a href="#">9</a></td>
+				<td id="cell10" onclick="selectDate(10)"><a href="#">10</a></td>
+				<td id="cell11" onclick="selectDate(11)"><a href="#">11</a></td>
+				<td id="cell12" onclick="selectDate(12)"><a href="#">12</a></td>
+				<td id="cell13" onclick="selectDate(13)"><a href="#">13</a></td>
+			  </tr>
+			  <tr>
+				<td id="cell14" onclick="selectDate(14)"><a href="#">14</a></td>
+				<td id="cell15" onclick="selectDate(16)"><a href="#">15</a></td>
+				<td id="cell16" onclick="selectDate(16)"><a href="#">16</a></td>
+				<td id="cell17" onclick="selectDate(17)"><a href="#">17</a></td>
+				<td id="cell18" onclick="selectDate(18)"><a href="#">18</a></td>
+				<td id="cell19" onclick="selectDate(19)"><a href="#">19</a></td>
+				<td id="cell20" onclick="selectDate(20)"><a href="#">20</a></td>
+			  </tr>
+			  <tr>
+				<td id="cell21" onclick="selectDate(21)"><a href="#">21</a></td>
+				<td id="cell22" onclick="selectDate(22)"><a href="#">22</a></td>
+				<td id="cell23"onclick="selectDate(23)"><a href="#">23</a></td>
+				<td id="cell24" onclick="selectDate(24)"><a href="#">24</a></td>
+				<td id="cell25" onclick="selectDate(25)"><a href="#">25</a></td>
+				<td id="cell26" onclick="selectDate(26)"><a href="#">26</a></td>
+				<td id="cell27" onclick="selectDate(27)"><a href="#">27</a></td>
+			  </tr>
+			  <tr>
+				<td id="cell28" onclick="selectDate(28)"><a href="#">28</a></td>
+				<td id="cell29" onclick="selectDate(29)"><a href="#">29</a></td>
+				<td id="cell30" onclick="selectDate(30)"><a href="#">30</a></td>
+				<td id="cell31" onclick="selectDate(31)"><a href="#">31</a></td>
+				<td class="cal-off"><a href="#">1</a></td>
+				<td class="cal-off"><a href="#">2</a></td>
+				<td class="cal-off"><a href="#">3</a></td>
+			  </tr>
+			</tbody>
+		  </table>
+		</div>
+	</div>
+</body>
+</html>
